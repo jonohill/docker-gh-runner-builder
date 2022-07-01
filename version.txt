@@ -1,0 +1,2 @@
+# renovate: datasource=github-releases depName=PasseiDireto/gh-runner
+UPSTREAM_VERSION=v3.4.4
