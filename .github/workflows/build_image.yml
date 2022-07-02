@@ -49,7 +49,7 @@ jobs:
             "s|^FROM nestybox/ubuntu-focal-systemd|FROM $DOCKER_REGISTRY/nestybox/ubuntu-focal-systemd:${{ github.run_id }}\nARG TARGETPLATFORM|g" \
             "$dockerfile_path"
           sed -i \
-            "s~amd64~$(echo $TARGETPLATFORM | sed 's|linux/||g')~g" \
+            's~amd64~$(echo $TARGETPLATFORM | sed "s|linux/||g")~g' \
             "$dockerfile_path"
           cd -
 
