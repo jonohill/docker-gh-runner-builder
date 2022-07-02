@@ -65,7 +65,7 @@ jobs:
           echo "::set-output name=VERSION::$UPSTREAM_VERSION"
 
       - name: Build ubuntu-focal-systemd
-        id: docker_build
+        id: docker_build_ubuntu-focal-systemd
         uses: docker/build-push-action@v3
         with:
           context: nesty/ubuntu-focal-systemd
@@ -77,7 +77,7 @@ jobs:
           tags: "${{ env.DOCKER_REGISTRY}}/nestybox/ubuntu-focal-systemd:${{ github.run_id }}"
 
       - name: Build ubuntu-focal-systemd-docker
-        id: docker_build
+        id: docker_build_ubuntu-focal-systemd-docker
         uses: docker/build-push-action@v3
         with:
           context: nesty/ubuntu-focal-systemd-docker
