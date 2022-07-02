@@ -60,6 +60,9 @@ jobs:
           sed -i \
             "s|^FROM nestybox/ubuntu-focal-systemd-docker|FROM $DOCKER_REGISTRY/nestybox/ubuntu-focal-systemd-docker:${{ github.run_id }}|g" \
             Dockerfile
+          sed -i \
+            's|ARG TARGETPLATFORM=amd64|ARG TARGETPLATFORM|g' \
+            Dockerfile
           cd -
 
           echo "::set-output name=VERSION::$UPSTREAM_VERSION"
