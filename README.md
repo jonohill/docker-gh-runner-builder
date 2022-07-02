@@ -2,4 +2,4 @@
 
 Builder repo for [PasseiDireto/gh-runner](https://github.com/PasseiDireto/gh-runner).
 
-This repo exists simply to build arm64 images, the built images are otherwise identical.
+This repo was created so that arm64 images could be built. The upstream nestybox images seem to be very out of date (and are amd64 only), so these are also re-built to be used as the gh-runner image's base.

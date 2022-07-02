@@ -9,10 +9,12 @@ on:
       - main
 
 env:
-  DOCKER_REPO: ghcr.io/jonohill/gh-runner
+  DOCKER_REGISTRY: ghcr.io/jonohill
+  DOCKER_REPO: gh-runner
 
 jobs:
-  main:
+
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,12 +41,52 @@ jobs:
         run: |
           source version.txt
 
+          # nestybox images
+          git clone https://github.com/nestybox/dockerfiles.git nesty
+          cd nesty
+          dockerfile_path="ubuntu-focal-systemd-docker/Dockerfile"
+          sed -i \
+            "s|^FROM nestybox/ubuntu-focal-systemd|FROM $DOCKER_REGISTRY/nestybox/ubuntu-focal-systemd:${{ github.run_id }}\nARG TARGETPLATFORM|g" \
+            "$dockerfile_path"
+          sed -i \
+            "s~amd64~$(echo $TARGETPLATFORM | sed 's|linux/||g')~g" \
+            "$dockerfile_path"
+          cd -
+
+          # gh-runner image
           git clone https://github.com/PasseiDireto/gh-runner.git gh-runner
           cd gh-runner
           git checkout "$UPSTREAM_VERSION"
+          sed -i \
+            "s|^FROM nestybox/ubuntu-focal-systemd-docker|FROM $DOCKER_REGISTRY/nestybox/ubuntu-focal-systemd-docker:${{ github.run_id }}|g" \
+            Dockerfile
           cd -
 
           echo "::set-output name=VERSION::$UPSTREAM_VERSION"
+
+      - name: Build ubuntu-focal-systemd
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: nesty/ubuntu-focal-systemd
+          file: ./nesty/ubuntu-focal-systemd/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max          
+          tags: "${{ env.DOCKER_REGISTRY}}/nestybox/ubuntu-focal-systemd:${{ github.run_id }}"
+
+      - name: Build ubuntu-focal-systemd-docker
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: nesty/ubuntu-focal-systemd-docker
+          file: ./nesty/ubuntu-focal-systemd-docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max          
+          tags: "${{ env.DOCKER_REGISTRY}}/nestybox/ubuntu-focal-systemd-docker:${{ github.run_id }}"
 
       - name: Build and push
         id: docker_build
@@ -56,4 +98,4 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max          
-          tags: "${{ env.DOCKER_REPO }}:${{ steps.pull_upstream.outputs.VERSION }}"
+          tags: "${{ env.DOCKER_REGISTRY}}/${{ env.DOCKER_REPO }}:${{ steps.pull_upstream.outputs.VERSION }}"
