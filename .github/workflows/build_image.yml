@@ -69,7 +69,7 @@ jobs:
 
       - name: Build ubuntu-focal-systemd
         id: docker_build_ubuntu-focal-systemd
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: nesty/ubuntu-focal-systemd
           file: ./nesty/ubuntu-focal-systemd/Dockerfile
@@ -81,7 +81,7 @@ jobs:
 
       - name: Build ubuntu-focal-systemd-docker
         id: docker_build_ubuntu-focal-systemd-docker
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: nesty/ubuntu-focal-systemd-docker
           file: ./nesty/ubuntu-focal-systemd-docker/Dockerfile
@@ -93,7 +93,7 @@ jobs:
 
       - name: Build and push
         id: docker_build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: gh-runner
           file: ./gh-runner/Dockerfile
